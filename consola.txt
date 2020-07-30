@@ -1,0 +1,42 @@
+@name Consola
+@inputs CS:wirelink
+@outputs 
+@persist 
+@trigger
+
+runOnTick(1)
+
+Array1 = array("Welcome to this puto server.","Map: " + map(), "Time: " + time("hour") + ":" + time("min") + ":" + time("sec"),
+"Props gravity: " + propGravity():toString(),
+"Speed lim.: " + speedLimit():toString() + " (Gm u)","Speed lim.: " + toUnit("km/h",speedLimit()) + " (km/h)")
+    
+for(I=0, Array1:count()){
+    CS:writeString(Array1[I,string],0,I)   
+}
+    
+
+#[CS:writeString("Props graviry: " + propGravity():toString(),0,0)
+CS:writeString("Speed lim.: " + speedLimit():toString() + " (Gm u)",0,1)
+CS:writeString("Speed lim.: " + toUnit("km/h",speedLimit()) + " (km/h)",0,2)
+
+
+P = players()
+
+runOnChat(1)
+hideChat(1)
+for(X=0, P:count()){
+    if(chatClk(P[X,entity])){
+        String = P[X,entity]:lastSaid():explode(" ")
+        if(String[1,string] == "/puta"){
+            XWL:writeString("Tu si que eres puta",0,0)
+        }
+    }
+}]#
+#[
+    Documentation and examples are available at:
+    https://github.com/wiremod/wire/wiki/Expression-2
+
+    Discord is available at https://discord.gg/H8UKY3Y
+    Reddit is available at https://www.reddit.com/r/wiremod
+    Report any bugs you find here https://github.com/wiremod/wire/issues
+]#

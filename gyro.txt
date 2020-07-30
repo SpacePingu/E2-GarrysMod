@@ -1,0 +1,20 @@
+@name Gyro
+@inputs CS:wirelink Pitch Yaw Roll
+@outputs
+@persist 
+@trigger 
+
+runOnTick(1)
+
+#CS:writeString(GyroVec:toString(),0,0)
+CS:writeString("Vec. Pos: " + "(" + Pitch:toString() + "," + Yaw:toString() + "," + Roll:toString() + ")" ,0,2)
+
+
+#[
+    Documentation and examples are available at:
+    https://github.com/wiremod/wire/wiki/Expression-2
+
+    Discord is available at https://discord.gg/H8UKY3Y
+    Reddit is available at https://www.reddit.com/r/wiremod
+    Report any bugs you find here https://github.com/wiremod/wire/issues
+]#
