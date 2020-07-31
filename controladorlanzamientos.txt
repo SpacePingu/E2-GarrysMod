@@ -1,0 +1,21 @@
+@name ControladorLanzamientos
+@inputs CS:wirelink ButtonEstate 
+@outputs Reset EngineEstate
+@persist 
+@trigger
+
+runOnTick(1)
+
+
+if(ButtonEstate == 1){
+    EngineEstate = 1
+    Reset = 1
+    Reset = 0
+    CS:writeString("Engine: ON",0,0)
+}else{
+    EngineEstate = 0
+    Reset = 1
+    Reset = 0
+    CS:writeString("Engine: OFF",0,0)
+}
+
