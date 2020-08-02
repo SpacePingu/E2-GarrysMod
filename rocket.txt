@@ -1,16 +1,72 @@
 @name Rocket
-@inputs CS:wirelink Pitch Yaw Roll EngineSignal
-@outputs VectorThruster:vector Multiplier
+@inputs CS:wirelink Pitch Yaw Roll EngineSignal SetYaw Speed
+@outputs VectorThruster:vector Multiplier XposYpos XposYneg XnegYpos XnegYneg #ConstYaw
+@persist ConstYaw
 @trigger 
+
+Z = 600*10
+#ConstYaw = 0
 
 runOnTick(1)
 
+function void setYaw(){
+       ConstYaw = Yaw
+}
+
+function void mainEngine(){
+    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z)
+}
+
+function void landing(){
+    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), 0)
+}
+
+function void stabilizers(){
+    #if(Yaw <= (ConstYaw-5) | Yaw >= (ConstYaw+5)){
+    if(Yaw != 0 & Speed != 0){
+        if(Yaw >= (ConstYaw+5)){
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+        }elseif(Yaw > ConstYaw & Yaw < ConstYaw+5){
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+            interval(100)
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+            interval(200)
+            XposYneg = XnegYpos = XposYpos = XnegYneg = 0            
+        }elseif(Yaw <= (ConstYaw-5)){
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+        }elseif(Yaw < ConstYaw & Yaw > ConstYaw-5){
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+            interval(100)
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+            interval(200)
+            XposYneg = XnegYpos = XposYpos = XnegYneg = 0
+        }
+    }elseif(Speed == 0 | EngineSignal == 0){
+        XposYneg = XnegYpos = XposYpos = XnegYneg = 0
+    }
+}
+
 #CS:writeString(GyroVec:toString(),0,0)
+
+if(SetYaw == 1){
+    setYaw()  
+}
+
 if(EngineSignal == 1){
-    VectorThruster = vec(0,0,600)
+    #VectorThruster = vec(0,0,600)
+    mainEngine()
+    stabilizers()
     Multiplier = 1
 }else{
-    VectorThruster = vec()
+    Z = 0
+    #VectorThruster = vec()
+    mainEngine()
     Multiplier = 0
 }
 

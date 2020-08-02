@@ -7,7 +7,7 @@ runOnTick(1)
 
 #CS:writeString(GyroVec:toString(),0,0)
 if(EngineSignal == 1){
-    VectorThruster = vec(0,0,600)
+    VectorThruster = vec(0,10,0)
     Multiplier = 1
 }else{
     VectorThruster = vec()

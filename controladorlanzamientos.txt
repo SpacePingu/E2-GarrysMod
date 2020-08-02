@@ -1,21 +1,23 @@
 @name ControladorLanzamientos
-@inputs CS:wirelink ButtonEstate 
-@outputs Reset EngineEstate
+@inputs CS:wirelink FireEngine SetYaw 
+@outputs Reset EngineEstate ConstantYaw
 @persist 
 @trigger
 
-runOnTick(1)
+#runOnTick(1)
 
+if(SetYaw == 1){
+    ConstantYaw = 1   
+}else{
+    ConstantYaw = 0
+}
 
-if(ButtonEstate == 1){
+if(FireEngine == 1){
     EngineEstate = 1
-    Reset = 1
-    Reset = 0
     CS:writeString("Engine: ON",0,0)
 }else{
     EngineEstate = 0
-    Reset = 1
-    Reset = 0
     CS:writeString("Engine: OFF",0,0)
 }
+
 
