@@ -1,15 +1,15 @@
 @name ControladorLanzamientos
-@inputs CS:wirelink FireEngine SetYaw 
-@outputs Reset EngineEstate ConstantYaw
+@inputs CS:wirelink FireEngine SetVars 
+@outputs Reset EngineEstate SignalVars
 @persist 
 @trigger
 
 #runOnTick(1)
 
-if(SetYaw == 1){
-    ConstantYaw = 1   
+if(SetVars == 1){
+    SignalVars = 1   
 }else{
-    ConstantYaw = 0
+    SignalVars = 0
 }
 
 if(FireEngine == 1){

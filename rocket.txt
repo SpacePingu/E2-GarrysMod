@@ -1,16 +1,25 @@
 @name Rocket
-@inputs CS:wirelink Pitch Yaw Roll EngineSignal SetYaw Speed
-@outputs VectorThruster:vector Multiplier XposYpos XposYneg XnegYpos XnegYneg #ConstYaw
-@persist ConstYaw
+@inputs CS:wirelink Pitch Yaw Roll EngineSignal SetVars Speed Altura
+@outputs VectorThruster:vector Multiplier XposYpos XposYneg XnegYpos XnegYneg Supports #ConstYaw
+@persist ConstYaw AlturaBase
 @trigger 
 
-Z = 600*10
+Z = 10000
 #ConstYaw = 0
 
 runOnTick(1)
 
-function void setYaw(){
-       ConstYaw = Yaw
+function void setVars(){
+    ConstYaw = Yaw
+    AlturaBase = Altura
+}
+
+function void landingSupports(){
+    if(Altura <= AlturaBase + 300){
+        Supports = 1
+    }else{
+        Supports = 0
+    }
 }
 
 function void mainEngine(){
@@ -18,7 +27,23 @@ function void mainEngine(){
 }
 
 function void landing(){
-    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), 0)
+    if(Altura <= (AlturaBase + 480) & Altura >= (AlturaBase + 250)){
+        Multiplier = 1
+        VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z/2)
+    }elseif(Altura <= (AlturaBase + 250) & Altura >= (AlturaBase + 50)){
+        Multiplier = 1
+        VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z/100)
+    }elseif(Altura < AlturaBase + 50){
+        Multiplier = 0
+    }
+    #elseif(Altura > AlturaBase + 600){
+    #    Multiplier = 1
+    #    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), 0)
+    #}
+    #elseif(Altura < AlturaBase + 100){
+    #    Multiplier = 0
+    #    VectorThruster = vec()
+    #}
 }
 
 function void stabilizers(){
@@ -47,16 +72,18 @@ function void stabilizers(){
             interval(200)
             XposYneg = XnegYpos = XposYpos = XnegYneg = 0
         }
-    }elseif(Speed == 0 | EngineSignal == 0){
+    }elseif(Speed == 0){
         XposYneg = XnegYpos = XposYpos = XnegYneg = 0
     }
 }
 
 #CS:writeString(GyroVec:toString(),0,0)
 
-if(SetYaw == 1){
-    setYaw()  
+if(SetVars == 1){
+    setVars()  
 }
+
+landingSupports()
 
 if(EngineSignal == 1){
     #VectorThruster = vec(0,0,600)
@@ -64,10 +91,11 @@ if(EngineSignal == 1){
     stabilizers()
     Multiplier = 1
 }else{
-    Z = 0
+    #Z = 0
     #VectorThruster = vec()
-    mainEngine()
-    Multiplier = 0
+    #mainEngine()
+    #Multiplier = 0
+    landing()
 }
 
 #CS:writeString("Vec. Pos: " + "(" + Pitch:toString() + "," + Yaw:toString() + "," + Roll:toString() + ")" ,0,2)
