@@ -1,13 +1,20 @@
-@name Gyro
-@inputs CS:wirelink Pitch Yaw Roll
-@outputs
-@persist 
+@name Rocket
+@inputs CS:wirelink Pitch Yaw Roll EngineSignal
+@outputs VectorThruster:vector Multiplier
 @trigger 
 
 runOnTick(1)
 
 #CS:writeString(GyroVec:toString(),0,0)
-CS:writeString("Vec. Pos: " + "(" + Pitch:toString() + "," + Yaw:toString() + "," + Roll:toString() + ")" ,0,2)
+if(EngineSignal == 1){
+    VectorThruster = vec(0,10,0)
+    Multiplier = 1
+}else{
+    VectorThruster = vec()
+    Multiplier = 0
+}
+
+#CS:writeString("Vec. Pos: " + "(" + Pitch:toString() + "," + Yaw:toString() + "," + Roll:toString() + ")" ,0,2)
 
 
 #[

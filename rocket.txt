@@ -1,0 +1,111 @@
+@name Rocket
+@inputs CS:wirelink Pitch Yaw Roll EngineSignal SetVars Speed Altura
+@outputs VectorThruster:vector Multiplier XposYpos XposYneg XnegYpos XnegYneg Supports #ConstYaw
+@persist ConstYaw AlturaBase
+@trigger 
+
+Z = 10000
+#ConstYaw = 0
+
+runOnTick(1)
+
+function void setVars(){
+    ConstYaw = Yaw
+    AlturaBase = Altura
+}
+
+function void landingSupports(){
+    if(Altura <= AlturaBase + 300){
+        Supports = 1
+    }else{
+        Supports = 0
+    }
+}
+
+function void mainEngine(){
+    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z)
+}
+
+function void landing(){
+    if(Altura <= (AlturaBase + 480) & Altura >= (AlturaBase + 250)){
+        Multiplier = 1
+        VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z/2)
+    }elseif(Altura <= (AlturaBase + 250) & Altura >= (AlturaBase + 50)){
+        Multiplier = 1
+        VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), Z/100)
+    }elseif(Altura < AlturaBase + 50){
+        Multiplier = 0
+    }
+    #elseif(Altura > AlturaBase + 600){
+    #    Multiplier = 1
+    #    VectorThruster = vec(Z*sin(Pitch), Z*sin(Roll), 0)
+    #}
+    #elseif(Altura < AlturaBase + 100){
+    #    Multiplier = 0
+    #    VectorThruster = vec()
+    #}
+}
+
+function void stabilizers(){
+    #if(Yaw <= (ConstYaw-5) | Yaw >= (ConstYaw+5)){
+    if(Yaw != 0 & Speed != 0){
+        if(Yaw >= (ConstYaw+5)){
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+        }elseif(Yaw > ConstYaw & Yaw < ConstYaw+5){
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+            interval(100)
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+            interval(200)
+            XposYneg = XnegYpos = XposYpos = XnegYneg = 0            
+        }elseif(Yaw <= (ConstYaw-5)){
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+        }elseif(Yaw < ConstYaw & Yaw > ConstYaw-5){
+            XposYneg = XnegYpos = 1
+            XposYpos = XnegYneg = 0
+            interval(100)
+            XposYneg = XnegYpos = 0
+            XposYpos = XnegYneg = 1
+            interval(200)
+            XposYneg = XnegYpos = XposYpos = XnegYneg = 0
+        }
+    }elseif(Speed == 0){
+        XposYneg = XnegYpos = XposYpos = XnegYneg = 0
+    }
+}
+
+#CS:writeString(GyroVec:toString(),0,0)
+
+if(SetVars == 1){
+    setVars()  
+}
+
+landingSupports()
+
+if(EngineSignal == 1){
+    #VectorThruster = vec(0,0,600)
+    mainEngine()
+    stabilizers()
+    Multiplier = 1
+}else{
+    #Z = 0
+    #VectorThruster = vec()
+    #mainEngine()
+    #Multiplier = 0
+    landing()
+}
+
+#CS:writeString("Vec. Pos: " + "(" + Pitch:toString() + "," + Yaw:toString() + "," + Roll:toString() + ")" ,0,2)
+
+
+#[
+    Documentation and examples are available at:
+    https://github.com/wiremod/wire/wiki/Expression-2
+
+    Discord is available at https://discord.gg/H8UKY3Y
+    Reddit is available at https://www.reddit.com/r/wiremod
+    Report any bugs you find here https://github.com/wiremod/wire/issues
+]#

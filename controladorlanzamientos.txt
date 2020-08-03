@@ -1,0 +1,23 @@
+@name ControladorLanzamientos
+@inputs CS:wirelink FireEngine SetVars 
+@outputs Reset EngineEstate SignalVars
+@persist 
+@trigger
+
+#runOnTick(1)
+
+if(SetVars == 1){
+    SignalVars = 1   
+}else{
+    SignalVars = 0
+}
+
+if(FireEngine == 1){
+    EngineEstate = 1
+    CS:writeString("Engine: ON",0,0)
+}else{
+    EngineEstate = 0
+    CS:writeString("Engine: OFF",0,0)
+}
+
+
